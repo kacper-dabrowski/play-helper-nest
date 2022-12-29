@@ -1,0 +1,3 @@
+FROM play-helper-nest-base:latest
+
+CMD [ "npm", "run", "start:dev" ]

@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: mongo:4.2
+    restart: always
+    ports:
+      - "27017:27017"
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/play-helper-nest
+      - /play-helper-nest/node_modules/
+    working_dir: /play-helper-nest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
