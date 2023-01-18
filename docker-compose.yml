@@ -16,7 +16,6 @@ services:
       - ./:/play-helper-nest
       - /play-helper-nest/node_modules/
     working_dir: /play-helper-nest
-    ports:
+    ports: 
       - "3000:3000"
-    env_file:
-      - .env
+      

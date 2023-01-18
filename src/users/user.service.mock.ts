@@ -1,4 +1,3 @@
-import { ObjectID } from 'mongodb';
 import { UserService } from './service';
 import { User } from './user.entity';
 
@@ -8,9 +7,9 @@ export const userServiceMock: UserService = {
 };
 
 export const fakeUserEntity: User = {
-  id: new ObjectID(),
+  id: '5f6d0d6f4f6a7b6b6b6b6b6',
   username: 'jdoe',
   password: '123p4ssword!',
   fullName: 'John Doe',
-  startingPage: 'basic',
+  startingPage: '/basic',
 };

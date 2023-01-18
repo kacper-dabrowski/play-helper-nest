@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './service';
 import { User } from './user.entity';
-import R from 'ramda';
 import { hash as bcryptHash } from 'bcrypt';
 
 @Injectable()
