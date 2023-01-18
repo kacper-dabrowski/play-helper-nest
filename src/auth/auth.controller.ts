@@ -7,10 +7,13 @@ import {
   Put,
   UnauthorizedException,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/user.entity';
 import { DefaultUserService } from '../users/users.service';
+import { ValidationPipe } from '../validation/validation.pipe';
+import { loginSchema, registrationSchema } from './auth.schema';
 import {
   DefaultAuthService,
   UserAuthDto,
@@ -31,6 +34,7 @@ export class AuthController {
     private readonly authService: DefaultAuthService,
   ) {}
 
+  @UsePipes(new ValidationPipe(loginSchema))
   @Post()
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
@@ -49,6 +53,7 @@ export class AuthController {
     return this.authService.login(this.serializeUser(user));
   }
 
+  @UsePipes(new ValidationPipe(registrationSchema))
   @Put()
   @HttpCode(201)
   async register(@Body() createUserDto: CreateUserDto) {
@@ -58,6 +63,6 @@ export class AuthController {
   }
 
   private serializeUser(user: User): UserAuthDto {
-    return { username: user.username, id: user.id.toString() };
+    return { username: user.username, id: user.id };
   }
 }
