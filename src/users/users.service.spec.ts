@@ -45,7 +45,7 @@ describe('DefaultUserService', () => {
     expect(userRepository.create).toHaveBeenCalledWith({
       fullName: 'John Doe',
       password: 'hashed123p4ssword!',
-      startingPage: 'basic',
+      startingPage: '/basic',
       username: 'jdoe',
     });
     expect(userRepository.save).toHaveBeenCalled();
@@ -65,7 +65,7 @@ describe('DefaultUserService', () => {
     expect(result).toEqual({
       fullName: 'John Doe',
       password: 'hashed123p4ssword!',
-      startingPage: 'basic',
+      startingPage: '/basic',
       username: 'jdoe',
     });
   });
