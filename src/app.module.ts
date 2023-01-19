@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
+import { SupportRequestsModule } from './support-requests/support-requests.module';
+import { SupportRequest } from './support-requests/entities/support-request.entity';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { UsersModule } from './users/users.module';
         return {
           type: 'mongodb',
           url: configService.getOrThrow('DB_CONNECTION_STRING'),
-          entities: [User],
+          entities: [User, SupportRequest],
           synchronize: true,
           useUnifiedTopology: true,
         };
@@ -24,6 +26,7 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
     AuthModule,
+    SupportRequestsModule,
   ],
   providers: [AppService],
 })
