@@ -19,6 +19,7 @@ import { UsersModule } from './users/users.module';
           entities: [User],
           synchronize: true,
           useUnifiedTopology: true,
+          dropSchema: configService.get('NODE_ENV') === 'test' ? true : false,
         };
       },
     }),

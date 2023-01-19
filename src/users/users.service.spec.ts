@@ -1,3 +1,4 @@
+import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -68,6 +69,20 @@ describe('DefaultUserService', () => {
       startingPage: '/basic',
       username: 'jdoe',
     });
+  });
+
+  it('should not allow to create the same username twice', async () => {
+    const { username, password, startingPage, fullName } = fakeUserEntity;
+
+    givenUserFound();
+
+    await expect(
+      service.create({ username, password, startingPage, fullName }),
+    ).rejects.toEqual(
+      new ConflictException('User with given username already exists'),
+    );
+
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({ username });
   });
 
   it('should allow to find a user by their username', async () => {
