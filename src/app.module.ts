@@ -6,9 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
 
+const environmentPrefix = process.env.ENVIRONMENT_PREFIX ?? 'dev';
+
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ envFilePath: `${environmentPrefix}.env` }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
