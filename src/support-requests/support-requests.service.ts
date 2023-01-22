@@ -23,15 +23,16 @@ export class SupportRequestsService {
   }
 
   async get(page: number, perPage: number) {
+    const paginationParams = this.calculatePaginationParams(page, perPage);
+
     const [result, totalCount] =
-      await this.supportRequestRepository.findAndCount({
-        take: perPage,
-        skip: (page - 1) * perPage,
-      });
+      await this.supportRequestRepository.findAndCount(paginationParams);
+
+    const hasNextPage = totalCount > page * perPage + 1;
 
     return {
       supportRequests: result,
-      hasNextPage: totalCount > page * perPage + 1,
+      hasNextPage,
       page,
       totalCount,
     };
@@ -48,5 +49,9 @@ export class SupportRequestsService {
     const srqToRemove = await this.supportRequestRepository.findOneBy({ id });
 
     return this.supportRequestRepository.remove(srqToRemove);
+  }
+
+  private calculatePaginationParams(page: number, perPage: number) {
+    return { take: perPage, skip: (page - 1) * perPage };
   }
 }

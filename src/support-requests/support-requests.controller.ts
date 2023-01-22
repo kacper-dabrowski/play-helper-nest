@@ -19,25 +19,53 @@ export class SupportRequestsController {
   ) {}
 
   @Post()
-  create(@Body() createSupportRequestDto: CreateSupportRequestDto) {
-    return this.supportRequestsService.create(createSupportRequestDto);
+  async create(@Body() createSupportRequestDto: CreateSupportRequestDto) {
+    return this.withErrorHandling(() =>
+      this.supportRequestsService.create(createSupportRequestDto),
+    );
   }
 
   @Get()
-  findAll(@Query('page') page: number, @Query('perPage') perPage: number) {
-    return this.supportRequestsService.get(+page, +perPage);
+  async get(@Query('page') page: string, @Query('perPage') perPage: string) {
+    return this.withErrorHandling(() =>
+      this.supportRequestsService.get(+page, +perPage),
+    );
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateSupportRequestDto: UpdateSupportRequestDto,
   ) {
-    return this.supportRequestsService.update(id, updateSupportRequestDto);
+    return this.withErrorHandling(() =>
+      this.supportRequestsService.update(id, updateSupportRequestDto),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.supportRequestsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return this.checkIfOperationSuccessful(() =>
+      this.supportRequestsService.remove(id),
+    );
+  }
+
+  private async withErrorHandling<T>(handler: () => Promise<T>) {
+    try {
+      const response = await handler();
+
+      return { ...response, success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  }
+
+  private async checkIfOperationSuccessful<T>(handler: () => Promise<T>) {
+    try {
+      await handler();
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
   }
 }
