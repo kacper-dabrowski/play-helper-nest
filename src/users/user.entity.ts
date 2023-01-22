@@ -1,18 +1,11 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  ObjectIdColumn,
-  OneToMany,
-} from 'typeorm';
-import { SupportRequest } from '../support-requests/entities/support-request.entity';
+import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @ObjectIdColumn()
   id: string;
 
+  @Index()
   @Column()
   username: string;
 
