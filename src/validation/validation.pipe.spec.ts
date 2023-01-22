@@ -1,5 +1,9 @@
 import * as Joi from 'joi';
-import { createSchemaValidator, ValidationPipe } from './validation.pipe';
+import {
+  bodyValidationPipe,
+  createSchemaValidator,
+  ValidationPipe,
+} from './validation.pipe';
 
 const personSchema = Joi.object({ name: Joi.string(), surname: Joi.string() });
 
@@ -10,12 +14,12 @@ describe('ValidationPipe', () => {
   let pipeInstance: ValidationPipe;
 
   beforeEach(() => {
-    pipeInstance = new ValidationPipe(personSchema);
+    pipeInstance = bodyValidationPipe(personSchema);
   });
 
   it('should throw validation error with details if schema does not match value', () => {
     try {
-      pipeInstance.transform(invalidPerson);
+      pipeInstance.transform(invalidPerson, { type: 'body' });
     } catch (error) {
       expect(error.response).toEqual({
         error: 'Bad Request',
@@ -28,7 +32,9 @@ describe('ValidationPipe', () => {
   });
 
   it('should return value, when it is valid', async () => {
-    expect(pipeInstance.transform(validPerson)).toEqual(validPerson);
+    expect(pipeInstance.transform(validPerson, { type: 'body' })).toEqual(
+      validPerson,
+    );
   });
 
   it('should return boolean indicating if schema is valid', async () => {
@@ -36,5 +42,14 @@ describe('ValidationPipe', () => {
 
     expect(validator(invalidPerson)).toEqual(false);
     expect(validator(validPerson)).toEqual(true);
+  });
+
+  it('should not validate, when type does not match', async () => {
+    const validateSpy = jest.spyOn(personSchema, 'validate');
+
+    expect(pipeInstance.transform(invalidPerson, { type: 'param' })).toEqual(
+      invalidPerson,
+    );
+    expect(validateSpy).not.toHaveBeenCalled();
   });
 });

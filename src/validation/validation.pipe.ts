@@ -1,11 +1,20 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common';
 import Joi, { ObjectSchema } from 'joi';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
-  constructor(private schema: ObjectSchema) {}
+  constructor(private schema: ObjectSchema, private type: string) {}
 
-  transform(value: unknown) {
+  transform(value: unknown, metadata: ArgumentMetadata) {
+    if (metadata.type !== this.type) {
+      return value;
+    }
+
     const { error } = this.schema.validate(value, { abortEarly: false });
 
     if (error) {
@@ -19,6 +28,9 @@ export class ValidationPipe implements PipeTransform {
     return error.details.map(({ message, path }) => ({ message, path }));
   }
 }
+
+export const bodyValidationPipe = (schema: ObjectSchema) =>
+  new ValidationPipe(schema, 'body');
 
 export const createSchemaValidator =
   (schema: ObjectSchema) => (value: unknown) => {
