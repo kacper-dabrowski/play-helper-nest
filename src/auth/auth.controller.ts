@@ -12,7 +12,7 @@ import {
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/user.entity';
 import { DefaultUserService } from '../users/users.service';
-import { ValidationPipe } from '../validation/validation.pipe';
+import { bodyValidationPipe } from '../validation/validation.pipe';
 import { loginSchema, registrationSchema } from './auth.schema';
 import {
   DefaultAuthService,
@@ -34,7 +34,7 @@ export class AuthController {
     private readonly authService: DefaultAuthService,
   ) {}
 
-  @UsePipes(new ValidationPipe(loginSchema))
+  @UsePipes(bodyValidationPipe(loginSchema))
   @Post()
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
@@ -53,7 +53,7 @@ export class AuthController {
     return this.authService.login(this.serializeUser(user));
   }
 
-  @UsePipes(new ValidationPipe(registrationSchema))
+  @UsePipes(bodyValidationPipe(registrationSchema))
   @Put()
   @HttpCode(201)
   async register(@Body() createUserDto: CreateUserDto) {

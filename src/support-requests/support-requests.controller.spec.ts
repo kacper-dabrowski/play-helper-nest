@@ -86,6 +86,26 @@ describe('SupportRequestsController', () => {
     expect(fakeSupportRequestService.get).toHaveBeenCalledWith(1, 5);
   });
 
+  it('should return the first page with perPage=5 by default', async () => {
+    fakeSupportRequestService.get.mockResolvedValue({
+      supportRequests: [fakeSupportRequestEntity],
+      hasNextPage: false,
+      page: 1,
+      totalCount: 1,
+    });
+
+    const response = await controller.get();
+
+    expect(response).toEqual({
+      success: true,
+      supportRequests: [fakeSupportRequestEntity],
+      hasNextPage: false,
+      page: 1,
+      totalCount: 1,
+    });
+    expect(fakeSupportRequestService.get).toHaveBeenCalledWith(1, 5);
+  });
+
   it('should return success false and error, when getting documents fails', async () => {
     givenServiceFailsOnMethod(fakeSupportRequestService.get);
 
