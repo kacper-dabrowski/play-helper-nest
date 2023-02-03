@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/user.entity';
+import { UserModel } from '../users/user.entity';
 import { DefaultUserService } from '../users/users.service';
 
 export interface AuthService {
@@ -28,7 +28,7 @@ export class DefaultAuthService implements AuthService {
     username: string,
     password: string,
   ): Promise<AuthenticationFailure | AuthenticationSuccessful> {
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findByUsername({ username });
 
     if (!user) {
       return { user: null, validationResult: ValdiationResult.UserNotFound };
@@ -71,7 +71,7 @@ export enum ValdiationResult {
 }
 
 interface AuthenticationSuccessful {
-  user: User;
+  user: UserModel;
   validationResult: ValdiationResult.AuthenticationSuccessful;
 }
 

@@ -10,7 +10,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { User } from '../users/user.entity';
+import { UserModel } from '../users/user.entity';
 import { DefaultUserService } from '../users/users.service';
 import { bodyValidationPipe } from '../validation/validation.pipe';
 import { loginSchema, registrationSchema } from './auth.schema';
@@ -62,7 +62,7 @@ export class AuthController {
     return this.authService.login(this.serializeUser(user));
   }
 
-  private serializeUser(user: User): UserAuthDto {
+  private serializeUser(user: UserModel): UserAuthDto {
     return { username: user.username, id: user.id };
   }
 }

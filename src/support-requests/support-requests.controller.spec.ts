@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { fakeCreateSupportRequestDto } from './dto/create-support-request.dto';
 import { fakeUpdateSupportRequestDto } from './dto/update-support-request.dto';
-import { fakeSupportRequestEntity } from './entities/support-request.entity';
+import { fakeSupportRequestEntity } from './support-request.entity.fake';
 import { SupportRequestsController } from './support-requests.controller';
 import { SupportRequestsService } from './support-requests.service';
 

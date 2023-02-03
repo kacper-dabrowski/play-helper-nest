@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { SupportRequestsService } from './support-requests.service';
+import { PrismaModule } from '../database/prisma.module';
+import { PrismaService } from '../database/prisma.service';
 import { SupportRequestsController } from './support-requests.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { SupportRequest } from './entities/support-request.entity';
-import { AuthModule } from '../auth/auth.module';
+import { SupportRequestsService } from './support-requests.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SupportRequest]), AuthModule],
+  imports: [PrismaModule],
   controllers: [SupportRequestsController],
-  providers: [SupportRequestsService],
+  providers: [SupportRequestsService, PrismaService],
 })
 export class SupportRequestsModule {}
