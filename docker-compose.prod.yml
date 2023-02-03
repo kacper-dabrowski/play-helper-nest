@@ -4,12 +4,3 @@ services:
   api:
     build: 
       target: production
-    depends_on:
-      - mongo
-    working_dir: /play-helper-nest
-    volumes:
-      []
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env    
