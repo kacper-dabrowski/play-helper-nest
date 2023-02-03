@@ -47,9 +47,9 @@ describe('DefaultAuthService', () => {
       user: null,
       validationResult: ValdiationResult.UserNotFound,
     });
-    expect(userServiceMock.findByUsername).toHaveBeenCalledWith(
-      fakeLoginUserDto.username,
-    );
+    expect(userServiceMock.findByUsername).toHaveBeenCalledWith({
+      username: fakeLoginUserDto.username,
+    });
     expect(compare).not.toHaveBeenCalled();
   });
 
@@ -66,9 +66,9 @@ describe('DefaultAuthService', () => {
       user: null,
       validationResult: ValdiationResult.InvalidPassword,
     });
-    expect(userServiceMock.findByUsername).toHaveBeenCalledWith(
-      fakeLoginUserDto.username,
-    );
+    expect(userServiceMock.findByUsername).toHaveBeenCalledWith({
+      username: fakeLoginUserDto.username,
+    });
     expect(compare).toHaveBeenCalledWith('hashedPwd', fakeUserEntity.password);
   });
 
@@ -86,9 +86,9 @@ describe('DefaultAuthService', () => {
       validationResult: ValdiationResult.AuthenticationSuccessful,
     });
     expect(compare).toHaveBeenCalledWith('hashedPwd', fakeUserEntity.password);
-    expect(userServiceMock.findByUsername).toHaveBeenCalledWith(
-      fakeLoginUserDto.username,
-    );
+    expect(userServiceMock.findByUsername).toHaveBeenCalledWith({
+      username: fakeLoginUserDto.username,
+    });
   });
 
   it('should sign username and id into the token', async () => {
