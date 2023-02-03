@@ -1,4 +1,4 @@
-FROM node:18 as base
+FROM node:18 as builder
 
 WORKDIR /play-helper-nest
 
@@ -10,17 +10,17 @@ COPY . .
 
 EXPOSE 3000
 
+RUN npm run prisma:build
+RUN npm run prisma:generate
+
 RUN npm run build
 
+FROM builder as development
 
-FROM base as development
+CMD [ "npm", "run", "start:dev" ]
 
-ENV NODE_ENV=development
 
-CMD ["npm", "run", "start:dev"]
+FROM builder as production
 
-FROM base as production
+CMD [ "npm", "run", "start:prod" ]
 
-ENV NODE_ENV=production
-
-CMD ["npm", "run", "start:prod"]
