@@ -1,20 +1,7 @@
-import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
-
-@Entity()
-export class User {
-  @ObjectIdColumn()
+export interface UserModel {
   id: string;
-
-  @Index()
-  @Column()
   username: string;
-
-  @Column()
   password: string;
-
-  @Column()
   fullName: string;
-
-  @Column()
   startingPage: string;
 }

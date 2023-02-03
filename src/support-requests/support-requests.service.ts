@@ -1,32 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { PrismaService } from '../database/prisma.service';
 import { CreateSupportRequestDto } from './dto/create-support-request.dto';
 import { UpdateSupportRequestDto } from './dto/update-support-request.dto';
-import { SupportRequest } from './entities/support-request.entity';
 
 @Injectable()
 export class SupportRequestsService {
-  constructor(
-    @InjectRepository(SupportRequest)
-    private supportRequestRepository: Repository<SupportRequest>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createSupportRequestDto: CreateSupportRequestDto) {
-    const srqToCreate = this.supportRequestRepository.create(
-      createSupportRequestDto,
-    );
-
-    await this.supportRequestRepository.save(srqToCreate);
-
-    return srqToCreate;
+    return this.prisma.supportRequest.create({
+      data: { ...createSupportRequestDto },
+    });
   }
 
   async get(page: number, perPage: number) {
     const paginationParams = this.calculatePaginationParams(page, perPage);
 
-    const [result, totalCount] =
-      await this.supportRequestRepository.findAndCount(paginationParams);
+    const [totalCount, result] = await Promise.all([
+      this.prisma.supportRequest.count(paginationParams),
+      this.prisma.supportRequest.findMany(paginationParams),
+    ]);
 
     const hasNextPage = totalCount > page * perPage + 1;
 
@@ -39,16 +32,14 @@ export class SupportRequestsService {
   }
 
   async update(id: string, updateSupportRequestDto: UpdateSupportRequestDto) {
-    return this.supportRequestRepository.save({
-      id,
-      ...updateSupportRequestDto,
+    return this.prisma.supportRequest.update({
+      where: { id },
+      data: updateSupportRequestDto,
     });
   }
 
   async remove(id: string) {
-    const srqToRemove = await this.supportRequestRepository.findOneBy({ id });
-
-    return this.supportRequestRepository.remove(srqToRemove);
+    return this.prisma.supportRequest.delete({ where: { id } });
   }
 
   private calculatePaginationParams(page: number, perPage: number) {

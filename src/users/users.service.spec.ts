@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from './user.entity';
+import { PrismaService } from '../database/prisma.service';
 import { fakeUserEntity } from './user.service.mock';
 import { DefaultUserService } from './users.service';
 
-const userRepository = {
-  create: jest.fn(async (user) => user),
-  findOneBy: jest.fn(),
-  save: jest.fn(async (user) => user),
+const prisma = {
+  user: {
+    create: jest.fn(({ data }) => data),
+
+    findUnique: jest.fn(),
+  },
 };
 
 describe('DefaultUserService', () => {
@@ -18,7 +19,10 @@ describe('DefaultUserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DefaultUserService,
-        { useFactory: () => userRepository, provide: getRepositoryToken(User) },
+        {
+          useFactory: () => prisma,
+          provide: PrismaService,
+        },
       ],
     }).compile();
 
@@ -42,13 +46,15 @@ describe('DefaultUserService', () => {
 
     await service.create({ username, password, startingPage, fullName });
 
-    expect(userRepository.create).toHaveBeenCalledWith({
-      fullName: 'John Doe',
-      password: 'hashed123p4ssword!',
-      startingPage: '/basic',
-      username: 'jdoe',
+    expect(prisma.user.create).toHaveBeenCalledWith({
+      data: {
+        fullName: 'John Doe',
+        password: 'hashed123p4ssword!',
+        startingPage: '/basic',
+        username: 'jdoe',
+      },
     });
-    expect(userRepository.save).toHaveBeenCalled();
+
     expect(bcrypt.hash).toHaveBeenCalledWith(fakeUserEntity.password, 8);
   });
 
@@ -73,28 +79,30 @@ describe('DefaultUserService', () => {
   it('should allow to find a user by their username', async () => {
     givenUserFound();
 
-    const result = await service.findByUsername('jdoe');
+    const result = await service.findByUsername({ username: 'jdoe' });
 
     expect(result).toEqual(fakeUserEntity);
-    expect(userRepository.findOneBy).toHaveBeenCalledWith({ username: 'jdoe' });
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { username: 'jdoe' },
+    });
   });
 
   it('should return null, when user is not found', async () => {
     givenUserNotFound();
 
-    const result = await service.findByUsername('non-existing');
+    const result = await service.findByUsername({ username: 'non-existing' });
 
     expect(result).toEqual(null);
-    expect(userRepository.findOneBy).toHaveBeenCalledWith({
-      username: 'non-existing',
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { username: 'non-existing' },
     });
   });
 
   function givenUserFound() {
-    userRepository.findOneBy.mockResolvedValue(fakeUserEntity);
+    prisma.user.findUnique.mockResolvedValue(fakeUserEntity);
   }
 
   function givenUserNotFound() {
-    userRepository.findOneBy.mockResolvedValue(null);
+    prisma.user.findUnique.mockResolvedValue(null);
   }
 });

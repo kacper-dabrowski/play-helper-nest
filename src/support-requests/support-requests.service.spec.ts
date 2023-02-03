@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { PrismaService } from '../database/prisma.service';
 import { fakeCreateSupportRequestDto } from './dto/create-support-request.dto';
-import {
-  fakeSupportRequestEntity,
-  SupportRequest,
-} from './entities/support-request.entity';
+import { fakeSupportRequestEntity } from './support-request.entity.fake';
 import { SupportRequestsService } from './support-requests.service';
 
-const supportRequestsRepository = {
-  create: jest.fn(() => fakeSupportRequestEntity),
-  save: jest.fn(async () => fakeSupportRequestEntity),
-  findOneBy: jest.fn(async () => fakeSupportRequestEntity),
-  findAndCount: jest.fn(async () => [[fakeSupportRequestEntity], 1]),
+const prisma = {
+  supportRequest: {
+    create: jest.fn(({ data }) => ({ ...data, id: 'some-id' })),
+    count: jest.fn(async () => 1),
+    findMany: jest.fn(async () => [fakeSupportRequestEntity]),
+    delete: jest.fn(),
+  },
 };
 
 describe('SupportRequestsService', () => {
@@ -22,8 +21,8 @@ describe('SupportRequestsService', () => {
       providers: [
         SupportRequestsService,
         {
-          useFactory: () => supportRequestsRepository,
-          provide: getRepositoryToken(SupportRequest),
+          useFactory: () => prisma,
+          provide: PrismaService,
         },
       ],
     }).compile();
@@ -39,28 +38,25 @@ describe('SupportRequestsService', () => {
     const result = await service.create(fakeCreateSupportRequestDto);
 
     expect(result).toEqual(fakeSupportRequestEntity);
-    expect(supportRequestsRepository.save).toHaveBeenCalledWith(
-      fakeSupportRequestEntity,
-    );
+    expect(prisma.supportRequest.create).toHaveBeenCalledWith({
+      data: fakeCreateSupportRequestDto,
+    });
   });
 
   it('should return paginated data', async () => {
     const result = await service.get(1, 5);
 
-    expect(supportRequestsRepository.findAndCount).toHaveBeenCalledWith({
-      skip: 0,
-      take: 5,
-    });
+    assertCorrectPaginationParams({ skip: 0, take: 5 });
     expect(result).toEqual({
       hasNextPage: false,
       page: 1,
       supportRequests: [
         {
+          id: 'some-id',
           content:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
           department: 'Technical department',
           description: 'Some description',
-          id: 'some-id',
           title: 'My support request',
         },
       ],
@@ -69,32 +65,47 @@ describe('SupportRequestsService', () => {
   });
 
   it('should calculate pagination correctly', async () => {
-    supportRequestsRepository.findAndCount.mockResolvedValue([
-      [fakeSupportRequestEntity],
-      10,
+    prisma.supportRequest.count.mockResolvedValue(10);
+    prisma.supportRequest.findMany.mockResolvedValue([
+      fakeSupportRequestEntity,
     ]);
 
     const result = await service.get(2, 5);
 
-    expect(supportRequestsRepository.findAndCount).toHaveBeenCalledWith({
-      skip: 5,
-      take: 5,
-    });
+    assertCorrectPaginationParams({ skip: 5, take: 5 });
     expect(result.hasNextPage).toEqual(false);
   });
 
   it('should return hasNextPage set to true, when there is another page available', async () => {
-    supportRequestsRepository.findAndCount.mockResolvedValue([
-      [fakeSupportRequestEntity],
-      10,
-    ]);
+    givenDocumentsCount(10);
 
     const result = await service.get(1, 5);
 
-    expect(supportRequestsRepository.findAndCount).toHaveBeenCalledWith({
-      skip: 5,
-      take: 5,
-    });
+    assertCorrectPaginationParams({ skip: 0, take: 5 });
     expect(result.hasNextPage).toEqual(true);
   });
 });
+
+function givenDocumentsCount(count: number) {
+  prisma.supportRequest.findMany.mockResolvedValue(
+    new Array(count).fill(fakeSupportRequestEntity),
+  );
+  prisma.supportRequest.count.mockResolvedValue(count);
+}
+
+function assertCorrectPaginationParams({
+  skip,
+  take,
+}: {
+  skip: number;
+  take: number;
+}) {
+  expect(prisma.supportRequest.findMany).toHaveBeenCalledWith({
+    skip,
+    take,
+  });
+  expect(prisma.supportRequest.count).toHaveBeenCalledWith({
+    skip,
+    take,
+  });
+}
