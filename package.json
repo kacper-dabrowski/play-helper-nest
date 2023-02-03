@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format":"prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:fix": "npm run format -- --write",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,7 +20,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "commit": "cz"
+    "commit": "cz",
+    "prisma:build": "cat src/*/*.prisma > prisma/schema.prisma",
+    "prisma:generate":"prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -30,18 +32,18 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
-    "@nestjs/typeorm": "^9.0.1",
+    "@prisma/client": "^4.9.0",
     "bcrypt": "^5.1.0",
     "joi": "^17.7.0",
     "mongodb": "^3.7.3",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "prisma": "^4.9.0",
     "ramda": "^0.28.0",
     "reflect-metadata": "^0.1.13",
     "res": "^0.4.0",
-    "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
