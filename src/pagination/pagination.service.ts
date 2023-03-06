@@ -13,11 +13,11 @@ export class PaginationService<T> {
 
   async getPaginatedEntries({
     page = 1,
-    perPage,
+    perPage = 15,
   }: {
     page?: number;
-    perPage: number;
-  }) {
+    perPage?: number;
+  } = {}) {
     const paginationParams = this.calculatePaginationParams(page, perPage);
 
     const [totalCount, entities] = await Promise.all([
@@ -49,6 +49,8 @@ export class PaginationService<T> {
     page: number;
     perPage: number;
   }) {
-    return totalCount > (page - 1) * perPage + 1;
+    const countWithExtraDocumentWanted = page * perPage + 1;
+
+    return totalCount >= countWithExtraDocumentWanted;
   }
 }
