@@ -29,6 +29,13 @@ describe('PaginationService', () => {
     expect(result.hasNextPage).toEqual(false);
   });
 
+  it('should fetch the first page by default with perPage = 15', async () => {
+    fakeEntity.count.mockResolvedValue(1);
+
+    await service.getPaginatedEntries();
+
+    expect(fakeEntity.findMany).toHaveBeenCalledWith({ skip: 0, take: 15 });
+  });
   it('should return total count', async () => {
     fakeEntity.count.mockResolvedValue(2137);
 

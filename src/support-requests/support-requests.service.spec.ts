@@ -70,9 +70,9 @@ describe('SupportRequestsService', () => {
       fakeSupportRequestEntity,
     ]);
 
-    const result = await service.get(2, 5);
+    const result = await service.get(3, 5);
 
-    assertCorrectPaginationParams({ skip: 5, take: 5 });
+    assertCorrectPaginationParams({ skip: 10, take: 5 });
     expect(result.hasNextPage).toEqual(false);
   });
 
