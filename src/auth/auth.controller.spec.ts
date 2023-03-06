@@ -31,7 +31,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should throw not found exception, when user with provided email does not exist', async () => {
+  it('should throw not found exception, when user with provided username does not exist', async () => {
     givenUserNotFound();
 
     await expect(
@@ -39,7 +39,7 @@ describe('AuthController', () => {
     ).rejects.toEqual(new NotFoundException());
   });
 
-  it('should throw unauthorized exception, when user with provided email does not exist', async () => {
+  it('should throw unauthorized exception, when user with provided username does not exist', async () => {
     givenInvalidPassword();
 
     await expect(
