@@ -10,7 +10,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { bodyValidationPipe } from '../validation/validation.pipe';
 import { CreateSupportRequestDto } from './dto/create-support-request.dto';
 import { UpdateSupportRequestDto } from './dto/update-support-request.dto';
