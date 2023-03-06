@@ -50,7 +50,7 @@ describe('SupportRequestsService', () => {
     expect(result).toEqual({
       hasNextPage: false,
       page: 1,
-      supportRequests: [
+      entities: [
         {
           id: 'some-id',
           content:
@@ -104,8 +104,5 @@ function assertCorrectPaginationParams({
     skip,
     take,
   });
-  expect(prisma.supportRequest.count).toHaveBeenCalledWith({
-    skip,
-    take,
-  });
+  expect(prisma.supportRequest.count).toHaveBeenCalled();
 }

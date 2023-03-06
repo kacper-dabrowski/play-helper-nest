@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
+import { PaginationService } from '../pagination/pagination.service';
 import { CreateSupportRequestDto } from './dto/create-support-request.dto';
 import { UpdateSupportRequestDto } from './dto/update-support-request.dto';
 
@@ -14,21 +15,12 @@ export class SupportRequestsService {
   }
 
   async get(page: number, perPage: number) {
-    const paginationParams = this.calculatePaginationParams(page, perPage);
+    const paginationService = new PaginationService(this.prisma.supportRequest);
 
-    const [totalCount, result] = await Promise.all([
-      this.prisma.supportRequest.count(paginationParams),
-      this.prisma.supportRequest.findMany(paginationParams),
-    ]);
-
-    const hasNextPage = totalCount > page * perPage + 1;
-
-    return {
-      supportRequests: result,
-      hasNextPage,
+    return paginationService.getPaginatedEntries({
       page,
-      totalCount,
-    };
+      perPage,
+    });
   }
 
   async update(id: string, updateSupportRequestDto: UpdateSupportRequestDto) {
@@ -40,9 +32,5 @@ export class SupportRequestsService {
 
   async remove(id: string) {
     return this.prisma.supportRequest.delete({ where: { id } });
-  }
-
-  private calculatePaginationParams(page: number, perPage: number) {
-    return { take: perPage, skip: (page - 1) * perPage };
   }
 }
