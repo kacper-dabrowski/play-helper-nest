@@ -2,10 +2,26 @@ version: "3.7"
 
 services:
   mongo:
-    image: mongo:4.2
+    image: 'zcube/bitnami-compat-mongodb:latest'
     restart: always
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=127.0.0.1
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_USER=user
+      - MONGODB_ROOT_PASSWORD=password1234!
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - "27017:27017"
+      - '27017:27017'
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u user -p password1234! --quiet | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+    networks:
+      - server-network
   api:
     build: 
       target: development
@@ -17,4 +33,10 @@ services:
     working_dir: /play-helper-nest
     ports: 
       - "3000:3000"
-      
+    networks:
+      - server-network
+volumes: 
+  mongodb_data:
+    driver: local
+networks:
+  server-network:
