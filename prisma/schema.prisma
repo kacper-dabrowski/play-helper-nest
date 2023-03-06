@@ -6,17 +6,29 @@ datasource db {
   provider = "mongodb"
   url      = env("DB_CONNECTION_STRING")
 }
-model SupportRequest {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  title String
+
+model Solution {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
   description String
-  department String
-  content String
+  content     String
+  author      User   @relation(fields: [authorId], references: [id])
+  authorId    String @db.ObjectId
 }
+
+model SupportRequest {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  department  String
+  content     String
+}
+
 model User {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  username  String @unique
-  password String
-  fullName String
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  username     String     @unique
+  password     String
+  fullName     String
   startingPage String
+  solutions    Solution[]
 }

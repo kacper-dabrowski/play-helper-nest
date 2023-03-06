@@ -1,7 +1,0 @@
-model SupportRequest {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  description String
-  department String
-  content String
-}
