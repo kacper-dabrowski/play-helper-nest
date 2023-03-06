@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Solution {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   content     String
-  author      User   @relation(fields: [authorId], references: [id])
-  authorId    String @db.ObjectId
+  author      User    @relation(fields: [authorId], references: [id])
+  authorId    String  @db.ObjectId
+  isPublic    Boolean
 }
 
 model SupportRequest {
